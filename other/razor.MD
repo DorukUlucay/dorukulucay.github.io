@@ -1,28 +1,3 @@
-### HTML Boilerplate
-
-```
-<html>
-
-<head>
-    <!-- <title></title> -->
-    <!-- <script src=""></script> -->
-    <!-- <style></style> -->
-    <!-- <link rel="stylesheet" type="text/css" href=""> -->
-</head>
-
-<body>
-
-    <p></p>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function(event) {});
-    </script>
-</body>
-
-</html>
-```
-
-
 ### Razor DropDownListFor
 ```
 @Html.DropDownListFor(model => model.StuffId, new SelectList(ViewBag.StuffList, "Value", "Text"), "Please Select", new { required = "required" })
