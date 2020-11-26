@@ -1,0 +1,23 @@
+/* https://colorhunt.co/palette/141100 */
+
+[data-theme="dark"] {
+    font-family: "Courier New", Courier, monospace;
+    background-color: #022c43;
+    color: #ffd700;
+}
+
+[data-theme="dark"] .container {
+    background-color: #053f5e;
+    padding: 15px;
+    margin: 15px;
+    border: 1px solid #115173;
+}
+
+[data-theme="dark"] #links a {
+    text-decoration: none;
+    color: #ffd700;
+}
+
+[data-theme="dark"] li {
+    padding: 4px;
+}
