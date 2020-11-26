@@ -1,17 +1,23 @@
+/**/
+
 body {
-  font-family: "Courier New", Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
+    background-color: ghostwhite;
+    color: black;
 }
 
 .container {
-  background-color: LightGray;
-  padding: 15px;
-  margin: 15px;
+    background-color: LightGray;
+    padding: 15px;
+    margin: 15px;
+    border: 1px solid darkgray;
 }
 
 #links a {
-  text-decoration: none;
+    text-decoration: none;
+    color: black;
 }
 
 li {
-  padding: 4px;
+    padding: 4px;
 }
