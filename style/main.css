@@ -21,3 +21,7 @@ body {
 li {
     padding: 4px;
 }
+
+input[type=checkbox] {
+    transform: scale(2);
+}
