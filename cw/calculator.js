@@ -17,8 +17,8 @@ function calculatex(input) {
       return colorectal(input);
     case "Non-Small Cell Lung Cancer":
       return non_small_cell_lung(input);
-    case "Gastric Cancer":
-      return gastric(input);
+    case "Small Cell Lung Cancer":
+      return small_cell_lung(input);
     default:
       break;
   }
