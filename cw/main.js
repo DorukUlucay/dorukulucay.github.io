@@ -15,15 +15,16 @@ new Vue({
             // "Gastrointestinal Stromal Tumor", "Glioblastoma", 
             // "Head and Neck Cancer", "Kidney Cancer", 
             // "Liver Cancer", "Melanoma", "Mesothelioma",
-            // "Non-Small Cell Lung Cancer", "Osteosarcoma", 
+             "Non-Small Cell Lung Cancer", 
+             //"Osteosarcoma", 
             // "Ovarian Cancer", "Pancreatic Cancer",
             // "Prostate Cancer", "Skin Basal Cell Carcinoma", 
-            // "Small Cell Lung Cancer",
+             "Small Cell Lung Cancer",
             // "Soft Tissue Sarcoma", "Testicular Cancer", 
             // "Thyroid Cancer", "Unknown"
         ],
 
-        stages: ["1", "2, 3", "4"],
+        stages: ["1", "2", "3", "4"],
 
         model: {
 
