@@ -405,8 +405,9 @@ debugger;
 function non_small_cell_lung(input) {
   var calendar = new Calendar();
   var operationDate = convertToDate(input.OperationDate);
+  var radioDate = convertToDate(input.RadioDate);
 
-  if (input.Stage == "1" || input.Stage == "2") {
+  if ((input.Stage == "1" || input.Stage == "2") && operationDate != null) {
     //op'tan bir ay sonra
     operationDate.addMonth(1);
     calendar.AddDate({
@@ -467,208 +468,113 @@ function non_small_cell_lung(input) {
 
 
     return calendar;
-  } else if (input.Stage == "3" || input.Stage == "4") {
-
+  } else if ((input.Stage == "1" || input.Stage == "2") && radioDate != null) 
+  {
 
     //op'tan bir ay sonra
     operationDate.addMonth(1);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.Physician
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-
-    //op'tan 3(aslında 4) ay sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Colonoscopy,
-      Notes: "Ameliyattan önce tam kolonoskopi yapılmadıysa"
-    });
-
-    //op'tan 6 ay sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-
-    //op'tan 9 ay sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-
-    //op'tan 1 yıl sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Colonoscopy,
-      Notes: "Ameliyattan önce tam kolonoskopi yapıldıysa ilk kolonoskopi bu tarihte yapılmalı"
-    });
-
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-
-    //op'tan 1 yıl 3 ay sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-
-    //op'tan bir buçuk yıl sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-    //op'tan 1 yıl 9 ay sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-
-    //op'tan 2 yıl sonra
     operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
+    operationDate.addMonth(3);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
+    });
 
-    //op'tan 2 buçuk yıl sonra
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
+    });
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
+    });
+
     operationDate.addMonth(6);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-
-
-    //op'tan 3 yıl sonra
     operationDate.addMonth(6);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Colonoscopy,
-      Notes: "Sonucunuzda polip çıkarsa doktorunuzla görüşün"
-    });
-
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-    //op'tan 3 buçuk yıl sonra
     operationDate.addMonth(6);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-
-    //op'tan 4 yıl sonra
     operationDate.addMonth(6);
     calendar.AddDate({
       Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
+      ActivityType: ActivityType.PhysicianAndThoraxTomography,
+      Notes: "Yılda bir fizik muayene ve toraks tomografisi."
     });
 
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-    //op'tan 4 buçuk yıl sonra
-    operationDate.addMonth(6);
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
-    });
-
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
-
-
-    //op'tan 5 yıl sonra
-    operationDate.addMonth(6);
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.PhysicianAndCEA
-    });
-
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Colonoscopy,
-      Notes: "Sonucunuzda polip çıkarsa doktorunuzla görüşün"
-    });
-
-    calendar.AddDate({
-      Date: operationDate,
-      ActivityType: ActivityType.Tomography,
-      Notes: "Doktor gerekli görürse"
-    });
 
     return calendar;
   }

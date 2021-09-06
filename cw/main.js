@@ -2,6 +2,10 @@ $(function() {
     $("#dateOperation").datepicker({
         dateFormat: 'dd.mm.yy',
     });
+
+    $("#dateRadio").datepicker({
+        dateFormat: 'dd.mm.yy',
+    });
 });
 
 new Vue({
@@ -41,6 +45,7 @@ new Vue({
 
             $("#calendarx").html("");
             this.model.OperationDate = $("#dateOperation").val();
+            this.model.RadioDate = $("#dateRadio").val();
             var calendar = calculatex(this.model);
             for (const key in calendar.Dates) {
                 if (Object.hasOwnProperty.call(calendar.Dates, key)) {
