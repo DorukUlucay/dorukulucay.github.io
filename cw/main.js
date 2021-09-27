@@ -15,7 +15,7 @@ new Vue({
             //"Bladder Cancer", "Breast Cancer", 
             "Colorectal Cancer",
             //"Endometrial Cancer", "Esophageal Cancer", 
-            //  "Gastric Cancer",
+             "Gastric Cancer",
             // "Gastrointestinal Stromal Tumor", "Glioblastoma", 
             // "Head and Neck Cancer", "Kidney Cancer", 
             // "Liver Cancer", "Melanoma", "Mesothelioma",
@@ -43,7 +43,7 @@ new Vue({
     methods: {
         calculate: function() {
 
-            $("#calendarx").html("");
+            
             this.model.OperationDate = $("#dateOperation").val();
             this.model.RadioDate = $("#dateRadio").val();
             var calendar = calculatex(this.model);
@@ -52,13 +52,11 @@ new Vue({
                     const element = calendar.Dates[key];
                     var actType =element.ActivityType;
 
-                    $("#calendarx").append("<li>"+ actType +" at "  +element.Date.toLocaleDateString()+
-                    element.Notes
-                    
-                    
-                    +"</li>")
+                    $("#calendarx tbody").append("<tr><td>"+ actType +"</td><td>"  +element.Date.toLocaleDateString()+
+                    "</td><td>"+element.Notes+"</td></tr>");
                 }
             }
+
         },
     }
 })

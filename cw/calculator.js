@@ -19,6 +19,8 @@ function calculatex(input) {
       return non_small_cell_lung(input);
     case "Small Cell Lung Cancer":
       return small_cell_lung(input);
+    case "Gastric Cancer":
+      return gastric(input);
     default:
       break;
   }
@@ -799,3 +801,261 @@ function small_cell_lung(input) {
 }
 
 
+
+function gastric(input) {
+  var calendar = new Calendar();
+  var operationDate = convertToDate(input.OperationDate);
+
+  if (input.Stage == "1"){
+    //op'tan bir ay sonra
+    operationDate.addMonth(1);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician,
+    });
+
+
+    return calendar;
+  } else if ( input.Stage == "2" || input.Stage == "3" ) {
+    operationDate.addMonth(1);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Tomography
+    });
+
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Tomography
+    });
+
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Tomography
+    });
+
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(3);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Tomography
+    });
+    
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician
+    });
+
+    operationDate.addMonth(6);
+    calendar.AddDate({
+      Date: operationDate,
+      ActivityType: ActivityType.Physician,
+      Notes : "Bu kontrolden itibaren yılda bir onkolog kontrolü"
+    });
+
+
+    return calendar;
+  }
+}
