@@ -13,7 +13,7 @@
     border: 1px solid #115173;
 }
 
-[data-theme="dark"] #links a {
+[data-theme="dark"] a {
     text-decoration: none;
     color: #ffd700;
 }
