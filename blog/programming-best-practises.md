@@ -1,8 +1,10 @@
 ---
-title: Best Practises
+title: Programming Best Practises
 ---
 
-Some practises I learned along the way. I'll explain some these later and add more. 
+# Programming Best Practises
+
+Some practises I learned along the way. I'll explain some of these later and add more. 
 
 * Avoid repetition. Reusability is king. 
 
