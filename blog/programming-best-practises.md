@@ -26,6 +26,8 @@ Some practises I learned along the way. I'll explain some of these later and add
 
 * Core logic must have unit tests. Endpoints must have integration tests.
 
+* Don't think of writing unit tests as a separate process. It must be a part of the development. If you think of unit testing as extra work, it'll eventually get ignored and forgotten. Then you'll have an untestable mess.
+
 * Don't spend too much time optimizing in early stages. First make it work, then scale.
 
 ## Best practises for OOP
