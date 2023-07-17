@@ -13,7 +13,7 @@ Then when I run my code, I started getting this error on consumer's end:
 Subscribed topic not available Broker: Unknown topic or partition
 ```
 
-It seems that [1]  [2]  [3], normally it is expected for consumer or producer to auto create topic but currently that part has some issues around it. So here's what I tried and what worked for me:
+It seems that ([1], [2], [3]), normally it is expected for consumer or producer to auto create topic but currently that part has some issues around it. So here's what I tried and what worked for me:
 
 
 ## Did not work: Explicitly set flag 
