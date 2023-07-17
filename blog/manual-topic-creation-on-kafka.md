@@ -1,6 +1,6 @@
 ---
 title: Manual Topic Creation on Kafka
-date: 2023-07-17
+date: 2023-07-17 12:00:00 -0000
 ---
 
 Recently, I enrolled on a udemy course on microservices. It's a good point to mention I am a noob in some of the topics below. 
@@ -48,10 +48,9 @@ Created topic MyTopicsName.
 ## Have not tried yet: Use admin api
 Another way to create a topic, which I have not tried yet is to use admin api. You can find some ready to run codes for it around [6], needless to say to be ran at your own risk.
 
-# References
-* [1]: <https://stackoverflow.com/a/53911281> "stackoverflow.com"
-* [2]: <https://stackoverflow.com/a/65614333> "stackoverflow.com"
-* [3]: <https://github.com/confluentinc/confluent-kafka-go/issues/788> "github.com"
-* [4]: <https://github.com/confluentinc/confluent-kafka-dotnet/issues/1366> "github.com"
-* [5]: <https://www.conduktor.io/kafka/kafka-topics-cli-tutorial/#Example-0> "conduktor.io"
-* [6]: <https://github.com/confluentinc/confluent-kafka-go/blob/master/examples/admin_create_topic/admin_create_topic.go> "github.com"
+[1]: <https://stackoverflow.com/a/53911281> 
+[2]: <https://stackoverflow.com/a/65614333> 
+[3]: <https://github.com/confluentinc/confluent-kafka-go/issues/788> 
+[4]: <https://github.com/confluentinc/confluent-kafka-dotnet/issues/1366> 
+[5]: <https://www.conduktor.io/kafka/kafka-topics-cli-tutorial/#Example-0>
+[6]: <https://github.com/confluentinc/confluent-kafka-go/blob/master/examples/admin_create_topic/admin_create_topic.go> 
