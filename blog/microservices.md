@@ -82,50 +82,19 @@ With this;
 * Write is very fast because it is append only. Read is very fast because it is materialized for final view.
 * Write and read does not affect each other and can be scaled independently.
 
-
 ## Command Flow
 Here's a sequence diagram that roughly shows what happens when client app sends a Command(POST, PUT or DELETE) to the Command Api.
 
-```mermaid
-      sequenceDiagram
-        Client App->>Controller: Request
-        Controller->>Command Dispatcher: Command
-        Command Dispatcher->>Command Handler: Command
-        critical Domain Operations
-            Note over Command Handler: Gets or Creates Aggregate
-            Note over Command Handler: Replays Events on Aggregate
-            Note over Command Handler: Applies new changes to aggregate
-        end
-        Command Handler->>Event Sourcing Handler: Aggregate
-        Event Sourcing Handler->>Event Store: Aggregate
-        Event Store->>Event Store Repository: Aggregate
-        Event Store Repository->>MongoDB: Document
-        critical Persisting New Events
-            Note over MongoDB,Event Store Repository: New changes persisted to event store
-        end
-        Event Store Repository->>Command Handler: (OK all the way back)
-        critical Publishing Events
-            Note over Command Handler: Produces events to message broker
-        end
-        Command Handler->>Client App: (OK all the way back)
-```
+| ![](images/command-flow.png) | 
+|:--:| 
+| *Sequence diagram of command flow. Drawn with mermaid.js.* |
 
 ## Event Handling
 When new events are published to a message broker, Read Api consumes this message and flow below occurs.
 
-```mermaid
-        sequenceDiagram
-          loop Listener
-          EventConsumer->>EventConsumer: Listening to events
-          end
-          EventConsumer->>EventHandler: Event
-          Note over EventHandler: Last state is mapped from event to entity
-          EventHandler->>Repository: Entity
-          Repository->>Context: Entity
-          Context->>MSSQL: Entity
-          Note over Context,MSSQL: Entity persisted to read store
-          Context->>EventConsumer: OK all the way back
-```
+| ![](images/event-flow.png) | 
+|:--:| 
+| *Sequence diagram of event flow. Drawn with mermaid.js.* |
 
 # Wrap
 * Basically, if you have a lot of domains and/or teams and/or users, Microservices can be a good fit to develop and scale your application independently. 
