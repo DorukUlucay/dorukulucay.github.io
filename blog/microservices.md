@@ -3,6 +3,8 @@ title: I Finally Started Learning Microservices
 date: 2023-07-26 20:00:00 -0000
 ---
 
+# I Finally Started Learning Microservices
+
 Yes, I just started learning microservices, years later it became big. Because a) I tend to procrastinate learning big topics to give them enough time and attention b) I want to see that they are not a FAD before sparing it time c) I already got a lot of learning going on d) I did not really need it and if I'm not applying stuff daily, I forget them easily.
 
 Recently I completed a 8.5 hours course on udemy. I wrote all the code with the instructor step by step(which of course I can not share publicly). Debugged through it. Summarized it here the way I understood it for whom interested and myself for future references. 

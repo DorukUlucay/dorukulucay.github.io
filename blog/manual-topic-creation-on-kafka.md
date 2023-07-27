@@ -3,6 +3,8 @@ title: Manual Topic Creation on Kafka
 date: 2023-07-17 12:00:00 -0000
 ---
 
+# Manual Topic Creation on Kafka
+
 Recently, I enrolled on a udemy course on microservices. It's a good point to mention I am a noob in some of the topics below. 
 
 One of the tools it utilizes is bitnami/kafka. The instructor was able to create 2 containers(one for kafka and one for zookeeper) through a docker compose file and when instructor ran his code, consumer seamlessly created a topic on kafka. But that was not the case for me. In the first attempt, I saw that kafka kept restarting and it was unreachable. I specified version as 3.1.2 and that fixed that problem.
