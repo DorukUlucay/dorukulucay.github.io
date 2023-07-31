@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Quantities Game
+    </title>
+    <style>
+        body {
+            background-color: darkolivegreen;
+            text-align: center;
+        }
+
+        img {
+            padding: 15px;
+        }
+
+        .square {
+            height: 75px;
+            width: 75px;
+            background-color: greenyellow;
+            margin: 0 auto;
+            padding: 15px;
+            display: inline-block;
+            color: darkolivegreen;
+            text-align: center;
+            font-size: 54px;
+            font-weight: bolder;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .blankSquare {
+            height: 75px;
+            width: 75px;
+            margin: 0 auto;
+            display: inline-block;
+        }
+
+
+        #result {
+            text-align: center;
+            font-size: 54px;
+            font-weight: bolder;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+
+        #scoreboard {
+            margin: 0 auto;
+
+            font-size: 24px;
+            font-weight: bolder;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    
+
+
+    <div id="items">
+    </div>
+    <br>
+    <br>
+    <div id="options">
+    </div>
+    <br>
+    <br>
+
+    <div id="result">
+    </div>
+    <br>
+    <br>
+    <div id="scoreboard">
+        <span>Correct:<span id="lblCorrect">0</span></span>
+        <span>Wrong:<span id="lblWrong">0</span></span>
+    </div>
+
+    <br>
+    <br>    <br>
+    <br>    <br>
+    <br>    <br>
+    <br>    <br>
+    <br>
+    <span>thanks to Kenney.nl for the <a href="https://opengameart.org/content/animal-pack-redux">assets</a></span>
+
+    
+
+    <script type="text/javascript">
+
+        const animals = [
+            "bear.png",
+            "buffalo.png",
+            "chick.png",
+            "chicken.png",
+            "cow.png",
+            "crocodile.png",
+            "dog.png",
+            "duck.png",
+            "elephant.png",
+            "frog.png",
+            "giraffe.png",
+            "goat.png",
+            "gorilla.png",
+            "hippo.png",
+            "horse.png",
+            "monkey.png",
+            "moose.png",
+            "narwhal.png",
+            "owl.png",
+            "panda.png",
+            "parrot.png",
+            "penguin.png",
+            "pig.png",
+            "rabbit.png",
+            "rhino.png",
+            "sloth.png",
+            "snake.png",
+            "walrus.png",
+            "whale.png",
+            "zebra.png"
+        ]
+
+        const randomness = {
+            shuffle: function (array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            },
+
+            randomIntFromInterval: function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min)
+            },
+
+            randomIntFromIntervalExcluding: function (min, max, exclude) {
+                let v = randomness.randomIntFromInterval(min, max)
+                if (exclude.includes(v))
+                    return randomness.randomIntFromIntervalExcluding(min, max, exclude)
+                else
+                    return v;
+            },
+
+            getRandomItem: function (arr) {
+                return arr[Math.floor(Math.random() * arr.length)]
+            }
+        }
+
+        const localStorageHelper = {
+            getDefault: function (key, def) {
+                let v = localStorage.getItem(key);
+                if (v == null)
+                    return def;
+                else
+                    return v;
+            }
+        }
+
+        const ui = {
+            success: function () {
+                var correctCount = parseInt(localStorageHelper.getDefault("correct", 0));
+                var newCount = (correctCount + 1);
+                ui.grab("lblCorrect").innerHTML = newCount;
+                localStorage.setItem("correct", newCount);
+
+                ui.grab("result").innerHTML = "CORRECT!"
+                populateUi();
+            },
+
+            fail: function () {
+                var wrongCount = parseInt(localStorageHelper.getDefault("wrong", 0));
+                var newCount = (wrongCount + 1);
+                ui.grab("lblWrong").innerHTML = newCount;
+                localStorage.setItem("wrong", newCount);
+
+                ui.grab("result").innerHTML = ":("
+                populateUi();
+            },
+
+            grab: function (id) {
+                return document.getElementById(id);
+            },
+
+            clear: function (id) {
+                return document.getElementById(id).innerHTML = "";
+            },
+        }
+
+        function getGame() {
+            let currentCorrectAnswer = randomness.randomIntFromInterval(1, 8);
+            var o = randomness.randomIntFromIntervalExcluding(1, 8, [currentCorrectAnswer]);
+            var p = randomness.randomIntFromIntervalExcluding(1, 8, [currentCorrectAnswer, o]);
+            var options = randomness.shuffle([currentCorrectAnswer, o, p]);
+
+            return {
+                correctAnswer: currentCorrectAnswer,
+                answerSet: options
+            }
+        }
+
+        function populateUi() {
+
+            //init new game
+            let game = getGame();
+            ui.clear("items");
+            ui.clear("options");
+
+            //create animals
+            for (let index = 0; index < game.correctAnswer; index++) {
+                var randomAnimal = randomness.getRandomItem(animals);
+                let animalBox = document.createElement("img");
+                animalBox.setAttribute("src", "img/" + randomAnimal);
+                ui.grab("items").append(animalBox);
+            }
+
+            //create option set
+            var separatorDiv = null;
+            for (const key in game.answerSet) {
+                if (Object.hasOwnProperty.call(game.answerSet, key)) {
+                    const element = game.answerSet[key];
+                    let answerBox = document.createElement("a");
+                    if (element == game.correctAnswer)
+                        answerBox.setAttribute("onclick", "ui.success()");
+                    else
+                        answerBox.setAttribute("onclick", "ui.fail()");
+
+                    let answerBoxContent = document.createElement("div");
+                    answerBoxContent.className = "square";
+                    answerBoxContent.innerHTML = element;
+                    answerBox.append(answerBoxContent)
+                    ui.grab("options").append(answerBox);
+                    separatorDiv = document.createElement("div");
+                    separatorDiv.className = "blankSquare";
+                    ui.grab("options").append(separatorDiv);
+                }
+            }
+            document.getElementById("options").removeChild(separatorDiv);
+        }
+
+        function initScoreBoard() {
+            var correctCount = parseInt(localStorageHelper.getDefault("correct", 0));
+            ui.grab("lblCorrect").innerHTML = correctCount;
+            var wrongCount = parseInt(localStorageHelper.getDefault("wrong", 0));
+            ui.grab("lblWrong").innerHTML = wrongCount;
+        }
+
+
+        initScoreBoard();
+        populateUi();
+    </script>
+
+</body>
+
+</html>
