@@ -19,7 +19,7 @@ It seems that ([1], [2], [3]), normally it is expected for consumer or producer 
 
 
 ## Did not work: Explicitly set flag 
-There is a flag to autocreate topics. It worked for some people [4] but not me.
+There is a flag to autocreate topics. It worked for some people ([4]) but not me.
 
 I added it to my yml file. I tried with false too and I tried removing it completely. Nothing(apparently) changed. Give it a shot, it might work for you.
 
@@ -30,7 +30,7 @@ I added it to my yml file. I tried with false too and I tried removing it comple
 ## Worked for me: Manually create a consumer 
 What worked for me was creating a topic manually through kafka-topics.sh file.
 
-I found this code [5]
+I found this code ([5])
 ```sh
 kafka-topics.sh --bootstrap-server localhost:9092 --topic MyTopicsName --create --partitions 3 --replication-factor 1
 ```
@@ -48,7 +48,7 @@ Created topic MyTopicsName.
 ```
 
 ## Have not tried yet: Use admin api
-Another way to create a topic, which I have not tried yet is to use admin api. You can find some ready to run codes for it around [6], needless to say to be ran at your own risk.
+Another way to create a topic, which I have not tried yet is to use admin api. You can find some ready to run codes for it around ([6]), needless to say to be ran at your own risk.
 
 [1]: <https://stackoverflow.com/a/53911281> "1"
 [2]: <https://stackoverflow.com/a/65614333> "2"
