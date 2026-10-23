@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#263232">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cep Synth">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Cep Synth</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Michroma&display=swap">
+<style>
+/* Layout: tek ekranlık enstrüman paneli — üstte kontrol şeritleri, kalan yüksekliğin tamamı çalma yüzeyi */
+:root{
+  --panel:#263232; --panel-2:#1B2424; --line:#3A4A49; --ink:#ECE7DB; --ink-dim:#9BAAA5;
+  --amber:#F2A33A; --rec:#E5484D;
+  --key:#F3F1EB; --key-shade:#D5D1C6; --key-ink:#6C6F69; --black:#151919; --felt:#7A2E2E;
+  --metal-hi:#E6E9EA; --metal-lo:#959EA1; --metal-ink:#2A3131;
+  --f-display:"Michroma", "Eurostile", system-ui, sans-serif;
+  --f-ui:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:dark; box-sizing:border-box; height:100%;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{
+  margin:0; height:100%; overflow:hidden; background:var(--panel); color:var(--ink);
+  font-family:var(--f-ui); font-size:13px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent; overscroll-behavior:none;
+}
+button{font:inherit; color:inherit; cursor:pointer; touch-action:manipulation}
+button:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
+.app{height:100%; display:flex; flex-direction:column; gap:12px; padding-block:12px; max-width:900px; margin-inline:auto}
+
+/* Üst bant */
+.top{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.brand{display:flex; flex-direction:column; gap:2px}
+.brand b{font-family:var(--f-display); font-weight:400; font-size:16px; letter-spacing:.14em}
+.brand small{font-size:10px; color:var(--ink-dim); letter-spacing:.08em; text-transform:uppercase}
+.seg{display:flex; background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:3px}
+.seg button{border:0; background:transparent; padding:7px 14px; border-radius:999px; font-size:12px; color:var(--ink-dim)}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--panel-2); font-weight:500}
+
+/* Ses seçimi */
+.sounds{display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin-inline:-4px; padding:2px 4px}
+.sounds::-webkit-scrollbar{display:none}
+.chip{flex:none; display:flex; align-items:center; gap:7px; border:1px solid var(--line); background:transparent;
+  border-radius:8px; padding:8px 11px; font-size:12px; color:var(--ink-dim)}
+.chip i{width:7px; height:7px; border-radius:50%; background:#4A5856}
+.chip[aria-pressed="true"]{color:var(--ink); border-color:var(--amber)}
+.chip[aria-pressed="true"] i{background:var(--amber); box-shadow:0 0 8px var(--amber)}
+
+/* Kontroller */
+.ctrls{display:flex; gap:8px; align-items:stretch; flex-wrap:wrap}
+.oct{display:flex; align-items:center; border:1px solid var(--line); border-radius:8px; overflow:hidden}
+.oct button{border:0; background:var(--panel-2); width:38px; height:38px; font-size:18px}
+.oct button:disabled{opacity:.35; cursor:default}
+.oct output{min-width:74px; text-align:center; font-size:12px; font-variant-numeric:tabular-nums}
+.oct output span{color:var(--ink-dim)}
+.btn{border:1px solid var(--line); background:var(--panel-2); border-radius:8px; padding:0 14px; height:40px;
+  display:flex; align-items:center; gap:8px; font-size:12px; font-variant-numeric:tabular-nums}
+.rec i{width:9px; height:9px; border-radius:50%; background:var(--rec); opacity:.55}
+.rec.live{border-color:var(--rec); color:#FFD9DA}
+.rec.live i{opacity:1; animation:blink 1s steps(2) infinite; box-shadow:0 0 10px var(--rec)}
+@keyframes blink{50%{opacity:.25}}
+.spacer{flex:1}
+
+/* Çalma yüzeyi */
+.stage{flex:1; min-height:0; position:relative; background:var(--panel-2); border-radius:12px; padding:10px}
+.kb{position:relative; height:100%; display:flex; gap:3px; touch-action:none; border-top:5px solid var(--felt); border-radius:2px}
+.w{flex:1; min-width:0; background:linear-gradient(var(--key) 82%, var(--key-shade)); border-radius:0 0 7px 7px;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:12px; color:var(--key-ink); font-size:11px}
+.w.on{background:var(--key-shade); box-shadow:inset 0 -5px 0 var(--amber)}
+.b{--W:calc((100% - 21px) / 8); --bw:calc(var(--W) * .6);
+  position:absolute; top:0; z-index:2; height:58%; width:var(--bw);
+  left:calc((var(--i) + 1) * var(--W) + var(--i) * 3px + 1.5px - var(--bw) / 2);
+  background:linear-gradient(#2A3030, var(--black) 70%); border-radius:0 0 5px 5px;
+  box-shadow:0 3px 0 #0006; display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px;
+  color:#7E8886; font-size:9px}
+.b.on{background:#333B3B; box-shadow:inset 0 -4px 0 var(--amber)}
+
+.stylo{height:100%; display:flex; flex-direction:column; gap:10px}
+.strip{flex:1; display:flex; gap:4px; touch-action:none; min-height:0}
+.pad{flex:1; min-width:0; border-radius:3px; position:relative;
+  background:linear-gradient(90deg, var(--metal-lo), var(--metal-hi) 42%, var(--metal-lo))}
+.pad.s{filter:brightness(.8)}
+.pad.on{box-shadow:0 0 0 2px var(--amber), 0 0 18px #F2A33A80}
+.pad span{position:absolute; left:0; right:0; bottom:8px; text-align:center; font-size:9px; color:var(--metal-ink); pointer-events:none}
+.hint{margin:0; font-size:11px; color:var(--ink-dim); text-align:center}
+
+/* Kayıtlar paneli */
+.sheet{position:fixed; inset:auto 0 0; z-index:20; background:var(--panel-2); border-top:1px solid var(--line);
+  border-radius:16px 16px 0 0; max-height:72%; display:flex; flex-direction:column;
+  padding:14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  box-shadow:0 -12px 40px #0008}
+.sheet header{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
+.sheet h2{margin:0; font-family:var(--f-display); font-weight:400; font-size:13px; letter-spacing:.12em}
+.list{overflow-y:auto; display:flex; flex-direction:column; gap:8px}
+.row{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; border:1px solid var(--line); border-radius:10px; padding:10px}
+.row .meta{min-width:0}
+.row .meta b{display:block; font-weight:500; font-size:13px}
+.row .meta small{color:var(--ink-dim); font-size:11px; font-variant-numeric:tabular-nums}
+.row .acts{display:flex; gap:6px}
+.row .acts button{border:1px solid var(--line); background:transparent; border-radius:7px; height:34px; padding:0 10px; font-size:12px}
+.row .acts .play.on{border-color:var(--amber); color:var(--amber)}
+.row .acts .del.arm{border-color:var(--rec); color:var(--rec)}
+.empty{color:var(--ink-dim); padding:18px 4px; line-height:1.5}
+.scrim{position:fixed; inset:0; background:#0007; z-index:19}
+.toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%);
+  background:var(--ink); color:var(--panel-2); padding:9px 14px; border-radius:8px; font-size:12px; z-index:30; max-width:90%}
+
+.bar{display:flex; flex-direction:column; gap:12px}
+
+/* Telefonda yatay düzen: kontroller iki sıraya iner, çalma yüzeyi büyür */
+@media (orientation:landscape) and (max-height:500px), (orientation:portrait) and (pointer:coarse) and (max-width:600px){
+  .app{gap:8px; padding-block:8px}
+  .bar{flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px}
+  .top{display:contents}
+  .brand{display:none}
+  .seg{order:1}
+  .ctrls{order:2; flex:1}
+  .sounds{order:3; width:100%; margin:0; padding:0}
+  .chip{padding:6px 10px}
+  .oct button{height:34px; width:34px}
+  .btn{height:36px}
+  .stage{padding:8px}
+  .hint{display:none}
+}
+/* Telefon dik tutulursa arayüzü 90° çevir: yalnızca yatay kullanım.
+   iPhone PWA'larda yön kilidine izin vermediği için CSS ile yapılıyor. */
+@media (orientation:portrait) and (pointer:coarse) and (max-width:600px){
+  .app{position:fixed; top:0; left:0; margin:0; max-width:none;
+    width:100vh; width:100dvh; height:100vw;
+    transform-origin:top left; transform:translateX(100vw) rotate(90deg);
+    padding-left:max(16px, env(safe-area-inset-top, 0px));
+    padding-right:max(16px, env(safe-area-inset-bottom, 0px))}
+}
+@media (prefers-reduced-motion:reduce){ .rec.live i{animation:none} }
+</style>
+</head>
+<body>
+
+
+<div class="app">
+  <div class="bar">
+  <div class="top">
+    <div class="brand"><b>CEP SYNTH</b><small>CS-1 · bir oktav · 5 ses</small></div>
+    <div class="seg" role="group" aria-label="Çalma yüzeyi">
+      <button id="mode-keys" data-mode="keys" aria-pressed="true">Tuşlar</button>
+      <button id="mode-stylo" data-mode="stylo" aria-pressed="false">Stylofon</button>
+    </div>
+  </div>
+
+  <div class="sounds" id="sounds" role="group" aria-label="Ses"></div>
+
+  <div class="ctrls">
+    <div class="oct">
+      <button id="oct-down" aria-label="Oktav aşağı">−</button>
+      <output id="oct-out"><span>Oktav</span> 4</output>
+      <button id="oct-up" aria-label="Oktav yukarı">+</button>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn rec" id="rec"><i></i><span id="rec-label">Kaydet</span></button>
+    <button class="btn" id="open-list">Kayıtlar · <span id="rec-count">0</span></button>
+  </div>
+  </div>
+
+  <div class="stage">
+    <div class="kb" id="kb" aria-label="Klavye"></div>
+    <div class="stylo" id="stylo" hidden>
+      <div class="strip" id="strip" aria-label="Stylofon şeridi"></div>
+      <p class="hint">Parmağını şeridin üstünde kaydır · tek ses, gerçek stylofon gibi</p>
+    </div>
+  </div>
+
+<div class="scrim" id="scrim" hidden></div>
+<section class="sheet" id="sheet" hidden aria-label="Kayıtlar">
+  <header><h2>KAYITLAR</h2><button class="btn" id="close-list">Kapat</button></header>
+  <div class="list" id="list"></div>
+</section>
+<div class="toast" id="toast" hidden></div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const NAMES = ['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si','Do'];
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('cepsynth.' + k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('cepsynth.' + k, JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------- Ses motoru ---------- */
+let ctx = null, master = null;
+function buildChain(c, dest){
+  const comp = c.createDynamicsCompressor();
+  comp.threshold.value = -14; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.2;
+  const g = c.createGain(); g.gain.value = 0.55;
+  g.connect(comp); comp.connect(dest);
+  return g;
+}
+function initAudio(){
+  if (ctx){ if (ctx.state !== 'running') ctx.resume(); return; }
+  try{ if (navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
+  const AC = window.AudioContext || window.webkitAudioContext;
+  ctx = new AC({ latencyHint: 'interactive' });
+  master = buildChain(ctx, ctx.destination);
+  const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();
+  s.buffer = b; s.connect(ctx.destination); s.start(0);
+}
+
+const pwCache = new WeakMap();
+function pulseWave(c){
+  if (pwCache.has(c)) return pwCache.get(c);
+  const N = 40, re = new Float32Array(N), im = new Float32Array(N), d = 0.25;
+  for (let n = 1; n < N; n++){
+    re[n] = (2 / (n * Math.PI)) * Math.sin(2 * Math.PI * n * d);
+    im[n] = (2 / (n * Math.PI)) * (1 - Math.cos(2 * Math.PI * n * d));
+  }
+  const w = c.createPeriodicWave(re, im); pwCache.set(c, w); return w;
+}
+function addOsc(v, type, ratio, gain, dest, t, detune){
+  const c = v.c, o = c.createOscillator();
+  if (type === 'pulse') o.setPeriodicWave(pulseWave(c)); else o.type = type;
+  o.frequency.setValueAtTime(v.f * ratio, t);
+  if (detune) o.detune.setValueAtTime(detune, t);
+  const g = c.createGain(); g.gain.value = gain;
+  o.connect(g); g.connect(dest || v.env); o.start(t);
+  v.oscs.push([o, ratio]); v.stops.push(o);
+  return o;
+}
+
+const SOUNDS = {
+  piano: { name:'Piyano', rel:0.25, build(v, t){
+    const c = v.c, f = v.f, lp = c.createBiquadFilter();
+    lp.type = 'lowpass'; lp.Q.value = 0.6; lp.connect(v.env);
+    lp.frequency.setValueAtTime(Math.min(f * 9, 12000), t);
+    lp.frequency.setTargetAtTime(Math.min(f * 3, 5000), t, 0.25);
+    addOsc(v, 'triangle', 1, 0.5, lp, t);
+    addOsc(v, 'sine', 1, 0.3, lp, t, -5);
+    addOsc(v, 'sine', 2, 0.22, lp, t, 4);
+    addOsc(v, 'sine', 3, 0.07, lp, t, -3);
+    const dec = Math.max(0.5, 2.6 - (f - 130) / 450);
+    const g = v.env.gain;
+    g.linearRampToValueAtTime(0.9, t + 0.004);
+    g.setTargetAtTime(0.4, t + 0.004, 0.09);
+    g.setTargetAtTime(0, t + 0.25, dec / 3);
+  }},
+  organ: { name:'Org', rel:0.06, build(v, t){
+    addOsc(v, 'sine', 1, 0.45, null, t);
+    addOsc(v, 'sine', 2, 0.3, null, t);
+    addOsc(v, 'sine', 3, 0.16, null, t);
+    addOsc(v, 'sine', 4, 0.1, null, t);
+    addOsc(v, 'sine', 8, 0.04, null, t);
+    v.env.gain.linearRampToValueAtTime(0.5, t + 0.012);
+  }},
+  stylo: { name:'Stylofon', rel:0.03, build(v, t){
+    const c = v.c, lp = c.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 2800; lp.Q.value = 2.5; lp.connect(v.env);
+    const o = addOsc(v, 'square', 1, 0.32, lp, t);
+    const lfo = c.createOscillator(), depth = c.createGain();
+    lfo.frequency.value = 5.6; depth.gain.setValueAtTime(v.f * 0.006, t);
+    lfo.connect(depth); depth.connect(o.frequency); lfo.start(t); v.stops.push(lfo);
+    v.onFreq = (f, tt) => depth.gain.setValueAtTime(f * 0.006, tt);
+    v.env.gain.linearRampToValueAtTime(0.5, t + 0.004);
+  }},
+  lead: { name:'Synth', rel:0.3, build(v, t){
+    const c = v.c, lp = c.createBiquadFilter();
+    lp.type = 'lowpass'; lp.Q.value = 2.5; lp.connect(v.env);
+    const top = Math.min(v.f * 6, 2200), rest = Math.min(v.f * 3, 1000);
+    lp.frequency.setValueAtTime(Math.min(v.f * 1.5, 500), t);
+    lp.frequency.linearRampToValueAtTime(top, t + 0.04);
+    lp.frequency.setTargetAtTime(rest, t + 0.04, 0.3);
+    addOsc(v, 'sawtooth', 1, 0.24, lp, t, -7);
+    addOsc(v, 'sawtooth', 1, 0.24, lp, t, 7);
+    addOsc(v, 'triangle', 0.5, 0.3, lp, t);
+    v.env.gain.linearRampToValueAtTime(0.45, t + 0.012);
+  }},
+  chip: { name:'8-bit', rel:0.04, build(v, t){
+    addOsc(v, 'pulse', 1, 0.22, null, t);
+    v.env.gain.linearRampToValueAtTime(0.5, t + 0.002);
+  }}
+};
+
+function makeVoice(c, dest, id, f, t){
+  const S = SOUNDS[id] || SOUNDS.piano;
+  const env = c.createGain(); env.gain.setValueAtTime(0, t); env.connect(dest);
+  const v = { c, env, f, S, oscs:[], stops:[], done:false };
+  S.build(v, t);
+  return v;
+}
+function setFreq(v, f, t){
+  if (v.done) return;
+  v.f = f;
+  v.oscs.forEach(([o, r]) => { o.frequency.cancelScheduledValues(t); o.frequency.setValueAtTime(f * r, t); });
+  if (v.onFreq) v.onFreq(f, t);
+}
+function releaseVoice(v, t){
+  if (v.done) return; v.done = true;
+  const g = v.env.gain, r = v.S.rel;
+  if (g.cancelAndHoldAtTime) g.cancelAndHoldAtTime(t);
+  else { g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); }
+  g.setTargetAtTime(0, t, r / 3);
+  const end = t + r * 2 + 0.05;
+  v.stops.forEach(o => { try{ o.stop(end); }catch(e){} });
+}
+
+/* ---------- Durum ---------- */
+const state = {
+  sound: SOUNDS[store.get('sound')] ? store.get('sound') : 'piano',
+  mode: store.get('mode') === 'stylo' ? 'stylo' : 'keys',
+  oct: Math.min(6, Math.max(2, +store.get('oct', 4) || 4))
+};
+const nf = n => 440 * Math.pow(2, (12 * (state.oct + 1) + n - 69) / 12);
+
+/* ---------- Canlı çalma + kayıt ---------- */
+const voices = new Map();
+let vid = 0, rec = null;
+function recEv(e){ e.t = (performance.now() - rec.start) / 1000; rec.ev.push(e); }
+function liveOn(n){
+  initAudio();
+  const f = nf(n), id = ++vid;
+  voices.set(id, makeVoice(ctx, master, state.sound, f, ctx.currentTime));
+  if (rec){ rec.ids.add(id); recEv({ k:'on', id, f, s:state.sound }); }
+  return id;
+}
+function liveSet(id, n){
+  const v = voices.get(id); if (!v) return;
+  const f = nf(n); setFreq(v, f, ctx.currentTime);
+  if (rec && rec.ids.has(id)) recEv({ k:'set', id, f });
+}
+function liveOff(id){
+  const v = voices.get(id); if (!v) return;
+  releaseVoice(v, ctx.currentTime); voices.delete(id);
+  if (rec && rec.ids.has(id)){ recEv({ k:'off', id }); rec.ids.delete(id); }
+}
+
+/* ---------- Klavye ---------- */
+const kb = $('kb'), strip = $('strip');
+const WHITE = [0,2,4,5,7,9,11,12], BLACK = [[1,0],[3,1],[6,3],[8,4],[10,5]];
+WHITE.forEach(n => { const k = document.createElement('div'); k.className = 'w'; k.dataset.n = n; k.textContent = NAMES[n]; kb.appendChild(k); });
+BLACK.forEach(([n, i]) => { const k = document.createElement('div'); k.className = 'b'; k.dataset.n = n; k.style.setProperty('--i', i); k.textContent = NAMES[n]; kb.appendChild(k); });
+NAMES.forEach((name, n) => { const p = document.createElement('div'); p.className = 'pad' + (name.includes('#') ? ' s' : ''); p.dataset.n = n; p.innerHTML = '<span>' + name + '</span>'; strip.appendChild(p); });
+
+const lit = new Map();
+function mark(root, n, d){
+  const key = root.id + n, c = (lit.get(key) || 0) + d;
+  lit.set(key, Math.max(0, c));
+  const el = root.querySelector('[data-n="' + n + '"]');
+  if (el) el.classList.toggle('on', c > 0);
+}
+function noteAt(root, e){
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const k = el && el.closest('[data-n]');
+  return k && root.contains(k) ? +k.dataset.n : null;
+}
+
+const kbPtr = new Map();
+kb.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  const n = noteAt(kb, e); if (n == null) return;
+  try{ kb.setPointerCapture(e.pointerId); }catch(_){}
+  kbPtr.set(e.pointerId, { n, id: liveOn(n) }); mark(kb, n, 1);
+});
+kb.addEventListener('pointermove', e => {
+  const p = kbPtr.get(e.pointerId); if (!p) return;
+  const n = noteAt(kb, e); if (n == null || n === p.n) return;
+  liveOff(p.id); mark(kb, p.n, -1);
+  p.n = n; p.id = liveOn(n); mark(kb, n, 1);
+});
+function kbUp(e){ const p = kbPtr.get(e.pointerId); if (!p) return; liveOff(p.id); mark(kb, p.n, -1); kbPtr.delete(e.pointerId); }
+kb.addEventListener('pointerup', kbUp); kb.addEventListener('pointercancel', kbUp);
+
+/* ---------- Stylofon (tek ses, kaydırmalı) ---------- */
+let sty = null;
+strip.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  if (sty) return;
+  const n = noteAt(strip, e); if (n == null) return;
+  try{ strip.setPointerCapture(e.pointerId); }catch(_){}
+  sty = { pid: e.pointerId, n, id: liveOn(n) }; mark(strip, n, 1);
+});
+strip.addEventListener('pointermove', e => {
+  if (!sty || e.pointerId !== sty.pid) return;
+  const n = noteAt(strip, e); if (n == null || n === sty.n) return;
+  liveSet(sty.id, n); mark(strip, sty.n, -1); sty.n = n; mark(strip, n, 1);
+});
+function styUp(e){ if (!sty || e.pointerId !== sty.pid) return; liveOff(sty.id); mark(strip, sty.n, -1); sty = null; }
+strip.addEventListener('pointerup', styUp); strip.addEventListener('pointercancel', styUp);
+
+function releaseAll(){
+  kbPtr.forEach(p => { liveOff(p.id); mark(kb, p.n, -1); }); kbPtr.clear();
+  if (sty){ liveOff(sty.id); mark(strip, sty.n, -1); sty = null; }
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
+document.addEventListener('touchend', initAudio, { once:true });
+
+/* ---------- Kontroller ---------- */
+const soundsEl = $('sounds');
+Object.entries(SOUNDS).forEach(([id, s]) => {
+  const b = document.createElement('button'); b.className = 'chip'; b.id = 'snd-' + id; b.dataset.s = id;
+  b.innerHTML = '<i></i>' + s.name; soundsEl.appendChild(b);
+});
+soundsEl.addEventListener('click', e => {
+  const b = e.target.closest('[data-s]'); if (!b) return;
+  releaseAll(); state.sound = b.dataset.s; store.set('sound', state.sound); render();
+  initAudio(); const t = ctx.currentTime, v = makeVoice(ctx, master, state.sound, nf(7), t); releaseVoice(v, t + 0.18);
+});
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+  releaseAll(); state.mode = b.dataset.mode; store.set('mode', state.mode);
+  if (state.mode === 'stylo' && !store.get('styloPicked')){ state.sound = 'stylo'; store.set('sound', 'stylo'); store.set('styloPicked', true); }
+  render();
+}));
+$('oct-down').onclick = () => { releaseAll(); state.oct = Math.max(2, state.oct - 1); store.set('oct', state.oct); render(); };
+$('oct-up').onclick = () => { releaseAll(); state.oct = Math.min(6, state.oct + 1); store.set('oct', state.oct); render(); };
+
+function render(){
+  document.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.s === state.sound));
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === state.mode));
+  kb.hidden = state.mode !== 'keys'; $('stylo').hidden = state.mode !== 'stylo';
+  $('oct-out').innerHTML = '<span>Oktav</span> ' + state.oct;
+  $('oct-down').disabled = state.oct <= 2; $('oct-up').disabled = state.oct >= 6;
+}
+
+/* ---------- Kayıt ---------- */
+let recs = store.get('recs', []);
+if (!Array.isArray(recs)) recs = [];
+const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+let recTick = null;
+$('rec').onclick = () => {
+  if (!rec){
+    initAudio();
+    rec = { start: performance.now(), ev: [], ids: new Set() };
+    $('rec').classList.add('live'); $('rec-label').textContent = '0:00';
+    recTick = setInterval(() => { $('rec-label').textContent = fmt((performance.now() - rec.start) / 1000); }, 250);
+    return;
+  }
+  clearInterval(recTick);
+  rec.ids.forEach(id => recEv({ k:'off', id }));
+  const ev = rec.ev; rec = null;
+  $('rec').classList.remove('live'); $('rec-label').textContent = 'Kaydet';
+  const first = ev.find(e => e.k === 'on');
+  if (!first){ toast('Kayıt boş, hiç nota çalınmadı'); return; }
+  const t0 = Math.max(0, first.t - 0.05);
+  ev.forEach(e => { e.t = +(Math.max(0, e.t - t0)).toFixed(4); if (e.f) e.f = +e.f.toFixed(3); });
+  const num = (store.get('recNum', 0) || 0) + 1; store.set('recNum', num);
+  recs.unshift({ id: Date.now(), name: 'Kayıt ' + num, date: Date.now(), dur: ev[ev.length - 1].t, ev });
+  saveRecs(); toast('Kayıt ' + num + ' kaydedildi');
+};
+function saveRecs(){ store.set('recs', recs); $('rec-count').textContent = recs.length; renderList(); }
+
+function schedule(c, dest, ev, t0){
+  const vs = new Map();
+  ev.forEach(e => {
+    const t = t0 + e.t;
+    if (e.k === 'on') vs.set(e.id, makeVoice(c, dest, e.s, e.f, t));
+    else if (e.k === 'set'){ const v = vs.get(e.id); if (v) setFreq(v, e.f, t); }
+    else { const v = vs.get(e.id); if (v) releaseVoice(v, t); }
+  });
+}
+let playing = null;
+function stopPlay(){
+  if (!playing) return;
+  try{ playing.g.disconnect(); }catch(e){}
+  clearTimeout(playing.timer); playing = null; renderList();
+}
+function play(r){
+  const same = playing && playing.id === r.id;
+  stopPlay(); if (same) return;
+  initAudio();
+  const g = ctx.createGain(); g.connect(master);
+  schedule(ctx, g, r.ev, ctx.currentTime + 0.08);
+  playing = { id: r.id, g, timer: setTimeout(stopPlay, (r.dur + 2) * 1000) };
+  renderList();
+}
+
+async function exportWav(r){
+  toast('Ses dosyası hazırlanıyor…');
+  const sr = 44100, oc = new OfflineAudioContext(1, Math.ceil((r.dur + 4) * sr), sr);
+  schedule(oc, buildChain(oc, oc.destination), r.ev, 0.02);
+  const buf = await oc.startRendering(), data = buf.getChannelData(0);
+  let end = data.length - 1; while (end > 0 && Math.abs(data[end]) < 1e-4) end--;
+  const n = Math.min(data.length, end + Math.floor(sr * 0.1));
+  const dv = new DataView(new ArrayBuffer(44 + n * 2));
+  const str = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+  str(0, 'RIFF'); dv.setUint32(4, 36 + n * 2, true); str(8, 'WAVE'); str(12, 'fmt ');
+  dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+  dv.setUint32(24, sr, true); dv.setUint32(28, sr * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+  str(36, 'data'); dv.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++){ const s = Math.max(-1, Math.min(1, data[i])); dv.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true); }
+  const name = r.name.replace(/\s+/g, '-') + '.wav';
+  const file = new File([dv.buffer], name, { type: 'audio/wav' });
+  try{
+    if (navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file] }); return; }
+  }catch(e){ if (e.name === 'AbortError') return; }
+  try{
+    const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast(name + ' indirildi');
+  }catch(e){ toast('Bu ortamda dosya indirilemiyor'); }
+}
+
+/* ---------- Liste ---------- */
+let armed = null;
+function renderList(){
+  const list = $('list');
+  if (!recs.length){ list.innerHTML = '<div class="empty">Henüz kayıt yok. Kaydet\'e bas, çal, sonra tekrar bas. Kayıtlar bu cihazda saklanır.</div>'; return; }
+  list.innerHTML = recs.map(r => {
+    const d = new Date(r.date);
+    const when = d.toLocaleDateString('tr-TR', { day:'numeric', month:'short' }) + ' ' + d.toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
+    const on = playing && playing.id === r.id;
+    return '<div class="row"><div class="meta"><b>' + r.name + '</b><small>' + fmt(r.dur) + ' · ' + when + '</small></div>' +
+      '<div class="acts"><button class="play' + (on ? ' on' : '') + '" data-a="play" data-id="' + r.id + '">' + (on ? '■ Durdur' : '▶ Çal') + '</button>' +
+      '<button data-a="wav" data-id="' + r.id + '">WAV</button>' +
+      '<button class="del' + (armed === r.id ? ' arm' : '') + '" data-a="del" data-id="' + r.id + '">' + (armed === r.id ? 'Emin misin?' : 'Sil') + '</button></div></div>';
+  }).join('');
+}
+$('list').addEventListener('click', e => {
+  const b = e.target.closest('[data-a]'); if (!b) return;
+  const r = recs.find(x => x.id === +b.dataset.id); if (!r) return;
+  if (b.dataset.a === 'play') play(r);
+  else if (b.dataset.a === 'wav') exportWav(r).catch(() => toast('Ses dosyası oluşturulamadı'));
+  else if (b.dataset.a === 'del'){
+    if (armed !== r.id){ armed = r.id; renderList(); return; }
+    if (playing && playing.id === r.id) stopPlay();
+    armed = null; recs = recs.filter(x => x.id !== r.id); saveRecs();
+  }
+});
+function openList(o){ $('sheet').hidden = !o; $('scrim').hidden = !o; armed = null; renderList(); }
+$('open-list').onclick = () => { releaseAll(); openList(true); };
+$('close-list').onclick = () => openList(false);
+$('scrim').onclick = () => openList(false);
+
+let toastT = null;
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200); }
+
+/* ---------- Bilgisayar klavyesi (masaüstünde deneme için) ---------- */
+const KEYMAP = 'awsedftgyhujk';
+const held = new Map();
+window.addEventListener('keydown', e => {
+  if (e.repeat || e.metaKey || e.ctrlKey) return;
+  const n = KEYMAP.indexOf(e.key.toLowerCase()); if (n < 0 || held.has(e.key)) return;
+  const root = state.mode === 'keys' ? kb : strip;
+  held.set(e.key, { n, id: liveOn(n), root }); mark(root, n, 1);
+});
+window.addEventListener('keyup', e => { const h = held.get(e.key); if (!h) return; liveOff(h.id); mark(h.root, h.n, -1); held.delete(e.key); });
+
+render(); saveRecs();
+
+if ('serviceWorker' in navigator && location.protocol === 'https:'){
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+})();
+</script>
+
+</body>
+</html>

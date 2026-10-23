@@ -1,0 +1,30 @@
+{
+  "name": "Cep Synth",
+  "short_name": "Cep Synth",
+  "lang": "tr",
+  "description": "Bir oktavlık tuş takımı ve stylofon modlu cep synthesizer",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#263232",
+  "theme_color": "#263232",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
