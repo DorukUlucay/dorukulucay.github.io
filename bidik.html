@@ -1,0 +1,316 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Bıdık</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
+<style>
+/* Layout: one candy-colored stage with the character singing on top, two rows of big pads, a row of mode and loop buttons. Deliberately single-theme: a bright toy */
+:root {
+  --bg: #fff4fb;
+  --stage: #ffe3f3;
+  --stage-2: #e8f8ff;
+  --ink: #3a2350;
+  --ink-soft: #7a5e93;
+  --body: #b99cf0;
+  --body-dark: #8e6fd6;
+  --horn: #7fe0c4;
+  --cheek: #ff9ec7;
+  --btn: #ffffff;
+  --btn-on: #3a2350;
+  --f: "Baloo 2", "Comic Sans MS", "Chalkboard SE", system-ui, sans-serif;
+  color-scheme: light;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body {
+  font-family: var(--f);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+h1 { font-size: clamp(34px, 9vw, 48px); font-weight: 800; line-height: 1; margin: 0; color: var(--body-dark); }
+.series { font-size: 13px; font-weight: 700; letter-spacing: .1em; color: var(--ink-soft); }
+.stage {
+  border-radius: 28px; overflow: hidden;
+  background: linear-gradient(180deg, var(--stage-2), var(--stage));
+  border: 4px solid #ffffff; box-shadow: 0 6px 0 #f2cfe4;
+}
+#cv { display: block; width: 100%; aspect-ratio: 16 / 10; max-width: 100%; }
+.pads { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+@media (max-width: 420px) { .pads { gap: 8px; } }
+.pad {
+  font-family: var(--f); font-weight: 800; font-size: clamp(15px, 4vw, 20px); color: #ffffff;
+  border: none; border-radius: 22px; min-height: 78px; cursor: pointer; touch-action: manipulation;
+  box-shadow: 0 6px 0 rgba(58,35,80,.25); transition: transform .07s, box-shadow .07s;
+  text-shadow: 0 2px 0 rgba(0,0,0,.15); -webkit-user-select: none; user-select: none;
+}
+.pad.hit, .pad:active { transform: translateY(5px) scale(.97); box-shadow: 0 1px 0 rgba(58,35,80,.25); }
+.pad.drum { color: var(--ink); text-shadow: none; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.label { font-size: 14px; font-weight: 700; color: var(--ink-soft); margin-right: 2px; }
+.chip {
+  font-family: var(--f); font-weight: 700; font-size: 17px; background: var(--btn); color: var(--ink);
+  border: 3px solid var(--body); border-radius: 999px; padding: 6px 16px; min-height: 48px; cursor: pointer;
+}
+.chip[aria-checked="true"] { background: var(--btn-on); color: #ffffff; border-color: var(--btn-on); }
+.loop {
+  font-family: var(--f); font-weight: 800; font-size: 18px; border: none; border-radius: 18px; cursor: pointer;
+  padding: 8px 20px; min-height: 56px; background: #ff5fa2; color: #ffffff; box-shadow: 0 5px 0 #d23d7f;
+  position: relative; overflow: hidden; flex: 1 1 180px;
+}
+.loop .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255,255,255,.3); pointer-events: none; }
+.loop span { position: relative; }
+.loop[data-state="on"] { background: var(--btn-on); box-shadow: 0 5px 0 #1f1030; }
+.clear { font-family: var(--f); font-weight: 700; font-size: 17px; border: 3px solid var(--body); background: var(--btn); color: var(--ink); border-radius: 18px; min-height: 56px; padding: 6px 18px; cursor: pointer; }
+button:focus-visible { outline: 4px solid var(--horn); outline-offset: 3px; }
+.foot { font-size: 14px; color: var(--ink-soft); text-align: center; margin: 0; line-height: 1.5; }
+</style>
+
+<main class="wrap">
+  <header>
+    <h1>Bıdık</h1>
+    <span class="series">TOY SOFTWARE · NO.04</span>
+  </header>
+
+  <div class="stage"><canvas id="cv" aria-label="Bıdık şarkı söylüyor"></canvas></div>
+
+  <div class="pads" id="pads"></div>
+
+  <div class="row" role="radiogroup" aria-label="Ses">
+    <span class="label">Bıdık'ın sesi:</span>
+    <button class="chip" role="radio" data-voice="sweet" aria-checked="true">Tatlı</button>
+    <button class="chip" role="radio" data-voice="robot" aria-checked="false">Robot</button>
+    <button class="chip" role="radio" data-voice="alien" aria-checked="false">Uzaylı</button>
+  </div>
+
+  <div class="row">
+    <button class="loop" id="loop" data-state="off"><i class="fill" id="fill"></i><span id="loopTxt">● Döngü başlat</span></button>
+    <button class="clear" id="clear">Döngüyü sil</button>
+  </div>
+
+  <p class="foot">Renkli tuşlara bas, Bıdık şarkı söylesin. Döngü açıkken çaldıkların tekrar tekrar çalar, üstüne ekleyebilirsin.<br>Klavye: A S D F G H J K · Boşluk: BUM · L: ÇAK</p>
+</main>
+
+<script>
+(() => {
+  const PADS = [
+    { label: 'Do', f: 261.63, c: '#ff5fa2' }, { label: 'Re', f: 293.66, c: '#ff8a4c' },
+    { label: 'Mi', f: 329.63, c: '#f5b800' }, { label: 'Sol', f: 392.00, c: '#3cc98c' },
+    { label: 'BUM', drum: 'kick', c: '#ffe3f3' },
+    { label: 'La', f: 440.00, c: '#29b6e8' }, { label: 'Do', f: 523.25, c: '#6c7cff' },
+    { label: 'Re', f: 587.33, c: '#a067f0' }, { label: 'Mi', f: 659.25, c: '#e05ad8' },
+    { label: 'ÇAK', drum: 'clap', c: '#e8f8ff' }
+  ];
+  const KEYS = { KeyA: 0, KeyS: 1, KeyD: 2, KeyF: 3, KeyG: 5, KeyH: 6, KeyJ: 7, KeyK: 8, Space: 4, KeyL: 9 };
+  let voice = 'sweet';
+
+  // ---------- audio ----------
+  let ctx, out, noise;
+  function audio() {
+    if (ctx) return ctx;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    out = ctx.createGain(); out.gain.value = 0.8;
+    const comp = ctx.createDynamicsCompressor(); out.connect(comp); comp.connect(ctx.destination);
+    const d = ctx.createDelay(1); d.delayTime.value = 0.25; const fb = ctx.createGain(); fb.gain.value = 0.3;
+    const wet = ctx.createGain(); wet.gain.value = 0.22;
+    out.connect(d); d.connect(fb); fb.connect(d); d.connect(wet); wet.connect(comp);
+    noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const nd = noise.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    return ctx;
+  }
+  function env(g, t, peak, dec) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dec); }
+  function note(f, t) {
+    const g = ctx.createGain(); g.connect(out);
+    if (voice === 'sweet') {
+      const a = ctx.createOscillator(); a.type = 'triangle'; a.frequency.value = f;
+      const b = ctx.createOscillator(); b.type = 'sine'; b.frequency.value = f * 2;
+      const gb = ctx.createGain(); gb.gain.value = 0.3;
+      a.connect(g); b.connect(gb); gb.connect(g); env(g, t, 0.35, 0.9);
+      a.start(t); b.start(t); a.stop(t + 1); b.stop(t + 1);
+    } else if (voice === 'robot') {
+      const a = ctx.createOscillator(); a.type = 'square'; a.frequency.value = f;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(3500, t); lp.frequency.exponentialRampToValueAtTime(500, t + 0.3); lp.Q.value = 8;
+      a.connect(lp); lp.connect(g); env(g, t, 0.18, 0.35); a.start(t); a.stop(t + 0.4);
+    } else {
+      const a = ctx.createOscillator(); a.type = 'sine';
+      a.frequency.setValueAtTime(f * 0.6, t); a.frequency.exponentialRampToValueAtTime(f, t + 0.12);
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 7.5; const ld = ctx.createGain(); ld.gain.value = f * 0.04;
+      lfo.connect(ld); ld.connect(a.frequency); a.connect(g); env(g, t, 0.4, 1.1);
+      a.start(t); lfo.start(t); a.stop(t + 1.2); lfo.stop(t + 1.2);
+    }
+  }
+  function drum(kind, t) {
+    const g = ctx.createGain(); g.connect(out);
+    if (kind === 'kick') {
+      const o = ctx.createOscillator(); o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.15);
+      o.connect(g); env(g, t, 0.9, 0.35); o.start(t); o.stop(t + 0.4);
+    } else {
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1400; bp.Q.value = 1.2; bp.connect(g);
+      [0, 0.012, 0.024].forEach((o, i) => {
+        const s = ctx.createBufferSource(); s.buffer = noise; const sg = ctx.createGain(); s.connect(sg); sg.connect(bp);
+        env(sg, t + o, i === 2 ? 0.9 : 0.5, i === 2 ? 0.2 : 0.03); s.start(t + o, Math.random() * 0.5); s.stop(t + o + 0.25);
+      });
+      g.gain.value = 0.7;
+    }
+  }
+
+  // ---------- pads ----------
+  const padsEl = document.getElementById('pads');
+  const btns = PADS.map((p, i) => {
+    const b = document.createElement('button');
+    b.className = 'pad' + (p.drum ? ' drum' : ''); b.textContent = p.label; b.style.background = p.c;
+    b.addEventListener('pointerdown', e => { e.preventDefault(); hit(i, true); });
+    b.addEventListener('keydown', e => { if (e.code === 'Enter') hit(i, true); });
+    padsEl.appendChild(b); return b;
+  });
+  function sound(i, t) { const p = PADS[i]; p.drum ? drum(p.drum, t) : note(p.f, t); }
+  function hit(i, live) {
+    audio(); ctx.resume();
+    sound(i, ctx.currentTime);
+    react(i);
+    if (live && loop.on) loop.events.push({ t: (ctx.currentTime - loop.start) % LOOP, i });
+  }
+  function react(i) {
+    const b = btns[i]; b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
+    setTimeout(() => b.classList.remove('hit'), 120);
+    const p = PADS[i];
+    if (p.drum === 'kick') { bid.squash = 1; bid.jump = Math.max(bid.jump, 0.6); }
+    else if (p.drum === 'clap') { bid.blink = 1; bid.wiggle = 1; burst(p.c === '#e8f8ff' ? '#29b6e8' : p.c, 10); }
+    else { bid.mouth = 1; bid.jump = 1; bid.tint = p.c; bid.pitch = (p.f - 261) / 400; burst(p.c, 14); }
+  }
+
+  // ---------- loop (2 bars, plays back what you tapped) ----------
+  const LOOP = 4;
+  const loop = { on: false, start: 0, events: [], until: 0, timer: null };
+  const loopBtn = document.getElementById('loop'), loopTxt = document.getElementById('loopTxt'), fill = document.getElementById('fill');
+  function tick() {
+    const now = ctx.currentTime, horizon = now + 0.12;
+    for (const e of loop.events) {
+      const cyc = Math.floor((loop.until - loop.start) / LOOP);
+      for (const c of [cyc, cyc + 1]) {
+        const at = loop.start + c * LOOP + e.t;
+        if (at > loop.until && at <= horizon && at >= now - 0.01) {
+          sound(e.i, at); setTimeout(() => react(e.i), Math.max(0, (at - now) * 1000));
+        }
+      }
+    }
+    loop.until = horizon;
+  }
+  loopBtn.addEventListener('click', () => {
+    audio(); ctx.resume();
+    loop.on = !loop.on;
+    if (loop.on) { loop.start = ctx.currentTime; loop.until = ctx.currentTime; loop.timer = setInterval(tick, 25); }
+    else { clearInterval(loop.timer); fill.style.width = '0'; }
+    loopBtn.dataset.state = loop.on ? 'on' : 'off';
+    loopTxt.textContent = loop.on ? '■ Döngüyü durdur' : '● Döngü başlat';
+  });
+  document.getElementById('clear').addEventListener('click', () => { loop.events = []; });
+  document.querySelectorAll('[data-voice]').forEach(b => b.addEventListener('click', () => {
+    voice = b.dataset.voice;
+    document.querySelectorAll('[data-voice]').forEach(x => x.setAttribute('aria-checked', String(x === b)));
+    audio(); ctx.resume(); note(392, ctx.currentTime); react(3);
+  }));
+  document.addEventListener('keydown', e => {
+    if (e.repeat || e.metaKey || e.ctrlKey) return;
+    if (e.target.tagName === 'BUTTON' && (e.code === 'Space' || e.code === 'Enter')) return;
+    if (e.code in KEYS) { e.preventDefault(); hit(KEYS[e.code], true); }
+  });
+
+  // ---------- character ----------
+  const cv = document.getElementById('cv'), g = cv.getContext('2d');
+  const bid = { jump: 0, squash: 0, mouth: 0, blink: 0, wiggle: 0, tint: '#b99cf0', pitch: 0, y: 0, vy: 0, nextBlink: 2 };
+  const parts = [];
+  function burst(color, n) {
+    for (let k = 0; k < n; k++) {
+      const a = Math.random() * Math.PI * 2, s = 120 + Math.random() * 260;
+      parts.push({ x: 0, y: -60, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 120, life: 1, color, r: 5 + Math.random() * 7, rot: Math.random() * 6 });
+    }
+  }
+  function star(x, y, r, rot) {
+    g.beginPath();
+    for (let k = 0; k < 10; k++) { const rr = k % 2 ? r * 0.45 : r, a = rot + k * Math.PI / 5; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+    g.closePath(); g.fill();
+  }
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const COL = { body: css('--body'), dark: css('--body-dark'), horn: css('--horn'), cheek: css('--cheek'), ink: css('--ink') };
+  let last = performance.now(), time = 0;
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+    const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    const k = Math.min(w / 640, h / 400);
+    // background dots
+    g.fillStyle = 'rgba(255,255,255,.7)';
+    for (let i = 0; i < 14; i++) { const x = (i * 97 + time * 12 * (i % 3 + 1)) % (w + 40) - 20, y = (i * 53) % h; g.beginPath(); g.arc(x, y, 3 + (i % 4) * 2, 0, 7); g.fill(); }
+    // ground shadow
+    const cx = w / 2, ground = h * 0.86;
+
+    // physics
+    if (bid.jump > 0.05 && bid.y >= -1) { bid.vy = -380 * bid.jump * k - 120 * k; bid.jump = 0; }
+    bid.vy += 1800 * k * dt; bid.y += bid.vy * dt; if (bid.y > 0) { if (bid.vy > 300 * k) bid.squash = Math.max(bid.squash, 0.6); bid.y = 0; bid.vy = 0; }
+    bid.squash *= Math.exp(-dt * 7); bid.mouth *= Math.exp(-dt * 3.2); bid.wiggle *= Math.exp(-dt * 4);
+    bid.nextBlink -= dt; if (bid.nextBlink < 0) { bid.blink = 1; bid.nextBlink = 2 + Math.random() * 3; }
+    bid.blink = Math.max(0, bid.blink - dt * 7);
+
+    const air = Math.min(1, -bid.y / (120 * k));
+    g.fillStyle = 'rgba(58,35,80,.12)'; g.beginPath(); g.ellipse(cx, ground + 6 * k, 90 * k * (1 - air * 0.4), 14 * k, 0, 0, 7); g.fill();
+
+    const R = 92 * k, sx = 1 + bid.squash * 0.25 - air * 0.06, sy = 1 - bid.squash * 0.22 + air * 0.08;
+    const bx = cx + Math.sin(time * 18) * bid.wiggle * 10 * k, by = ground - R * sy + bid.y + Math.sin(time * 2.2) * 3 * k;
+    g.save(); g.translate(bx, by); g.rotate(Math.sin(time * 16) * bid.wiggle * 0.12); g.scale(sx, sy);
+    // feet
+    g.fillStyle = COL.dark;
+    g.beginPath(); g.ellipse(-40 * k, R * 0.92, 26 * k, 14 * k, 0, 0, 7); g.ellipse(40 * k, R * 0.92, 26 * k, 14 * k, 0, 0, 7); g.fill();
+    // horn
+    g.fillStyle = COL.horn; g.beginPath();
+    g.moveTo(-18 * k, -R * 0.9); g.quadraticCurveTo(-6 * k, -R * 1.55, 14 * k, -R * 1.42); g.quadraticCurveTo(4 * k, -R * 1.2, 18 * k, -R * 0.9); g.closePath(); g.fill();
+    // body with tint glow
+    const grd = g.createRadialGradient(-R * 0.3, -R * 0.4, R * 0.1, 0, 0, R * 1.1);
+    grd.addColorStop(0, '#e6dbff'); grd.addColorStop(0.55, COL.body); grd.addColorStop(1, COL.dark);
+    g.fillStyle = grd; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill();
+    if (bid.mouth > 0.05) { g.globalAlpha = bid.mouth * 0.25; g.fillStyle = bid.tint; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill(); g.globalAlpha = 1; }
+    // tiny arms
+    g.strokeStyle = COL.dark; g.lineWidth = 12 * k; g.lineCap = 'round';
+    const wave = bid.mouth * 0.9;
+    g.beginPath(); g.moveTo(-R * 0.92, R * 0.15); g.lineTo(-R * 1.2, R * (0.25 - wave * 0.7)); g.stroke();
+    g.beginPath(); g.moveTo(R * 0.92, R * 0.15); g.lineTo(R * 1.2, R * (0.25 - wave * 0.7)); g.stroke();
+    // eyes
+    const eyeY = -R * 0.18, eyeX = R * 0.36, look = Math.sin(time * 0.7) * 4 * k;
+    for (const s of [-1, 1]) {
+      g.fillStyle = '#ffffff'; g.beginPath(); g.ellipse(s * eyeX, eyeY, 24 * k, 28 * k * (1 - bid.blink * 0.92), 0, 0, 7); g.fill();
+      if (bid.blink < 0.6) {
+        g.fillStyle = COL.ink; g.beginPath(); g.arc(s * eyeX + look, eyeY + 4 * k, 13 * k, 0, 7); g.fill();
+        g.fillStyle = '#ffffff'; g.beginPath(); g.arc(s * eyeX + look + 5 * k, eyeY - 2 * k, 4.5 * k, 0, 7); g.fill();
+      }
+    }
+    // freckles + cheeks
+    g.fillStyle = COL.cheek; g.globalAlpha = 0.8;
+    g.beginPath(); g.ellipse(-R * 0.62, R * 0.2, 16 * k, 10 * k, 0, 0, 7); g.ellipse(R * 0.62, R * 0.2, 16 * k, 10 * k, 0, 0, 7); g.fill();
+    g.globalAlpha = 1; g.fillStyle = COL.dark;
+    [[-0.68, 0.12], [-0.56, 0.24], [-0.7, 0.28], [0.68, 0.12], [0.56, 0.24], [0.7, 0.28]].forEach(([x, y]) => { g.beginPath(); g.arc(x * R, y * R, 2.4 * k, 0, 7); g.fill(); });
+    // mouth: a grin with one tooth, opens when singing
+    const mo = bid.mouth, mw = 26 * k + mo * 8 * k, mh = 6 * k + mo * 34 * k * (0.7 + bid.pitch * 0.3);
+    g.fillStyle = COL.ink; g.beginPath(); g.ellipse(0, R * 0.28 + mh * 0.3, mw, mh, 0, 0, Math.PI); g.lineTo(-mw, R * 0.28 + mh * 0.3); g.fill();
+    g.fillStyle = '#ffffff'; g.beginPath(); g.rect(6 * k, R * 0.28 + mh * 0.3, 9 * k, 9 * k); g.fill();
+    if (mo > 0.3) { g.fillStyle = '#ff7aa8'; g.beginPath(); g.ellipse(0, R * 0.28 + mh * 0.3 + mh * 0.6, mw * 0.5, mh * 0.3, 0, 0, 7); g.fill(); }
+    g.restore();
+
+    // music notes + stars
+    for (const p of parts) {
+      p.vy += 500 * dt; p.x += p.vx * dt * k; p.y += p.vy * dt * k; p.life -= dt * 0.9; p.rot += dt * 4;
+      g.globalAlpha = Math.max(0, p.life); g.fillStyle = p.color; star(bx + p.x, by + p.y, p.r * k * 1.4, p.rot);
+    }
+    g.globalAlpha = 1;
+    for (let i = parts.length - 1; i >= 0; i--) if (parts[i].life <= 0) parts.splice(i, 1);
+
+    if (loop.on && ctx) fill.style.width = (((ctx.currentTime - loop.start) % LOOP) / LOOP * 100) + '%';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>
